@@ -1,18 +1,24 @@
+
 import PySimpleGUI as sg
 import sqlite3 as banco
 # INICIANDO A CONEXÂO COM O BANCO DE DADOS
-conn = banco.connect("DESKTOP/bd_clientes/clientes.db")
+conn = banco.connect("DESKTOP/clientes.db")
 c = conn.cursor()
 
+
 # BOTÂO DO MENU PRINCIPAL COM A OPÇÂO DE CADASTRAR
+sg.theme("DarkTeal12")
 layout = [
-    [sg.Button("Cadastrar")],
-    [sg.Button("Cadastrar_Fornecedor")],
-    [sg.Button("Cadastrar_Transportadora")]
+    [sg.Button("Cadastrar", size=(20, 2), font=("Arial", 12))],
+    [sg.Button("Cadastrar_Fornecedor", size=(20, 2), font=("Arial", 12))],
+    [sg.Button("Consultar_Fornecedor", size=(20, 2), font=("Arial", 12))],
+    [sg.Button("Cadastrar_Transportadora", size=(20, 2), font=("Arial", 12))],
+    [sg.Button("Consultar_Transpotadora", size=(20, 2), font=("Arial", 12))],
+    [sg.Button("Consultar", size=(20, 2), font=("Arial", 12))]
 ]
 
 # NOME QUE APARECE NO SISTEMA E DEFINIÇÂO DO TAMANHO DA TELA  
-window = sg.Window("Sistema de Cadastro Vs.1.0",layout,size=(600,400)) 
+window = sg.Window("Sistema de Cadastro Vs.1.0",layout,size=(230,335)) 
 
 while True:
     event, values = window.read()
@@ -181,10 +187,106 @@ while True:
             transp_window["cidade"].update("")
             transp_window["estado"].update("")
 
-            #Confirmar o cadastro
-            sg.popup("Fornecedor Cadastrado com sucesso!", title="Cadastro")
 
-        fornecedor_window.close()
+    elif event == "Consultar":
+    
+            consulta_layout =[
+                [sg.Text("Clientes")],
+                [sg.InputText(key="clientes")],
+                [sg.Button("Consultar")],
+                [sg.Button("Cancelar")],
+                [sg.Table(values=[], headings=["nome","cpf","endereco","telefone","cidade","estado"], display_row_numbers=False, auto_size_columns=False, num_rows=10, key="tabela")]
+            ]    
+            consulta_window = sg.Window("Consulta de Clientes", consulta_layout, resizable=True)
+
+        #loop eventos
+        
+            while True:
+                event, values = consulta_window.read()
+            
+                if event == sg.WIN_CLOSED or event == "Cancelar":
+                    consulta_window.close()
+                    break
+
+                # operações no banco de dados
+                produto_busca = values["clientes"].upper()
+                c.execute( "SELECT nome, cpf, endereco,telefone,cidade,estado FROM clientes WHERE UPPER(nome) = ?",(produto_busca,))
+                registros = c.fetchall()
+
+                # ATUALIZAR
+                tabela = consulta_window["tabela"]
+                tabela.update(values=registros)     
+                       
+            consulta_window.close()  
+
+    elif event == "Consultar_Fornecedor":
+    
+            consulta_layout =[
+                [sg.Text("Consultar_Fornecedor")],
+                [sg.InputText(key="fornecedor")],
+                [sg.Button("Consultar")],
+                [sg.Button("Cancelar")],
+                [sg.Table(values=[], headings=["nome","cnpj","endereco","telefone","cidade","estado"], display_row_numbers=False, auto_size_columns=False, num_rows=10, key="tabela")]
+            ]    
+            consulta_window = sg.Window("Consulta de Fornecedores", consulta_layout, resizable=True)
+
+        #loop eventos
+        
+            while True:
+                event, values = consulta_window.read()
+            
+                if event == sg.WIN_CLOSED or event == "Cancelar":
+                    consulta_window.close()
+                    break
+
+                # operações no banco de dados
+                produto_busca = values["fornecedor"].upper()
+                c.execute( "SELECT nome, cnpj, endereco,telefone,cidade,estado FROM fornecedor WHERE UPPER(nome) = ?",(produto_busca,))
+                registros = c.fetchall()
+
+                # ATUALIZAR
+                tabela = consulta_window["tabela"]
+                tabela.update(values=registros)     
+                       
+            consulta_window.close()    
+
+    elif event == "Consultar_Transpotadora":
+    
+            consulta_layout =[
+                [sg.Text("Consultar_Transportadora")],
+                [sg.InputText(key="transportadora")],
+                [sg.Button("Consultar")],
+                [sg.Button("Cancelar")],
+                [sg.Table(values=[], headings=["nome","cnpj","endereco","telefone","cidade","estado"], display_row_numbers=False, auto_size_columns=False, num_rows=10, key="tabela")]
+            ]    
+            consulta_window = sg.Window("Consulta de Transportadora", consulta_layout, resizable=True)
+
+        #loop eventos
+        
+            while True:
+                event, values = consulta_window.read()
+            
+                if event == sg.WIN_CLOSED or event == "Cancelar":
+                    consulta_window.close()
+                    break
+
+                # operações no banco de dados
+                produto_busca = values["transportadora"].upper()
+                c.execute( "SELECT nome, cnpj, endereco,telefone,cidade,estado FROM transport WHERE UPPER(nome) = ?",(produto_busca,))
+                registros = c.fetchall()
+
+                # ATUALIZAR
+                tabela = consulta_window["tabela"]
+                tabela.update(values=registros)     
+                       
+            consulta_window.close() 
+
+
+
+
+conn.close() 
+     
+     
 
 
 
